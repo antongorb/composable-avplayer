@@ -1,5 +1,5 @@
 //
-//  AudioPlayerClientReducer.swift
+//  AudioPlayerClientFeature.swift
 //  Composable AVPlayer
 //
 //  Created by Anton Gorb on 08.01.2024.
@@ -8,7 +8,8 @@
 import Foundation
 import ComposableArchitecture
 
-struct AudioPlayerClientReducer: Reducer {
+@Reducer
+struct AudioPlayerClientFeature {
     
     struct State: Equatable {
         var isPlaying = false
@@ -49,7 +50,7 @@ struct AudioPlayerClientReducer: Reducer {
         case progressUpdated(TimeInterval)
         case durationUpdated(Double)
         case rateUpdated(Float)
-        case errorReceived(EquatableError)
+        case errorReceived(AudioPlayerClient.Error)
         case didPlayToEndTimeReceived
         case changeSlider(Double)
         case startObserving
@@ -62,7 +63,7 @@ struct AudioPlayerClientReducer: Reducer {
     
     @Dependency(\.audioPlayer) var audioPlayer
     
-    var body: some Reducer<State, Action> {
+    var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .play(let url):

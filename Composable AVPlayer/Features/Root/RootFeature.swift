@@ -8,7 +8,8 @@
 import Foundation
 import ComposableArchitecture
 
-struct RootReducer: Reducer {
+@Reducer
+struct RootReducer {
     
     struct State: Equatable {
         var audioPlayer = AudioPlayerFeature.State(
@@ -17,11 +18,11 @@ struct RootReducer: Reducer {
         )
     }
     
-    enum Action {
+    enum Action: Equatable {
         case audioPlayer(AudioPlayerFeature.Action)
     }
     
-    var body: some Reducer<State, Action> {
+    var body: some ReducerOf<Self> {
         Scope(state: \.audioPlayer, action: /Action.audioPlayer) {
             AudioPlayerFeature()
         }

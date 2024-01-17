@@ -18,6 +18,14 @@ struct AudioPlayerClient {
         case failed
     }
     
+    struct Error: Swift.Error, Equatable {
+        let error: NSError
+        
+        init(_ error: Swift.Error) {
+            self.error = error as NSError
+        }
+    }
+    
     var play: (_ url: URL) async -> Void
     var pause: () async -> Void
     var setRate: (_ rate: Float) async -> Void
@@ -28,7 +36,7 @@ struct AudioPlayerClient {
     var rateEffect: () -> Effect<Float> = { .none }
     var durationEffect: () -> Effect<Double> = { .none }
     var didPlayToEndTimeEffect: () -> Effect<Notification> = { .none }
-    var errorEffect: () -> Effect<EquatableError> = { .none }
+    var errorEffect: () -> Effect<Error> = { .none }
 }
 
 extension AudioPlayerClient: TestDependencyKey {
@@ -73,7 +81,7 @@ extension AudioPlayerClient: TestDependencyKey {
         }, didPlayToEndTimeEffect: {
             unimplemented("\(Self.self).didPlayToEndTimeEffect", placeholder: Effect<Notification>.none)
         }, errorEffect: {
-            unimplemented("\(Self.self).errorEffect", placeholder: Effect<EquatableError>.none)
+            unimplemented("\(Self.self).errorEffect", placeholder: Effect<Error>.none)
         }
     )
 }

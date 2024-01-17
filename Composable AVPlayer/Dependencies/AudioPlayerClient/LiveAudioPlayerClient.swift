@@ -36,7 +36,7 @@ private extension AVPlayerItem {
 extension AudioPlayerClient: DependencyKey {
     
     static var liveValue: Self {
-        let player = AVQueuePlayer()
+        let player = AVPlayer()
         
         let currentItemPublisher = player
             .currentItemPublisher()
@@ -82,7 +82,8 @@ extension AudioPlayerClient: DependencyKey {
             }, errorEffect: {
                 let errorPublisher = currentItemPublisher
                     .flatMap { $0.publisher(for: \.error).eraseToAnyPublisher() }
-                    .compactMap { $0?.toEquatableError() }
+                    .compactMap { $0 }
+                    .map { Error($0) }
                     .receive(on: DispatchQueue.main)
                 
                 return .publisher { errorPublisher }

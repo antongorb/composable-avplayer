@@ -22,7 +22,7 @@ final class SwiftUITestTests: XCTestCase {
     let rateStep: Float = 0.25
     let backwardSeconds: Double = 5
     let forwardSeconds: Double = 10
-    static let testError = SomeError.invalidURL.toEquatableError()
+    static let testError = AudioPlayerClient.Error(SomeError.invalidURL)
     static let testNotification = Notification(name: AVPlayerItem.didPlayToEndTimeNotification)
     
     var duration: Double = 0 {
@@ -46,7 +46,7 @@ final class SwiftUITestTests: XCTestCase {
     }
     
     var durationEffect = PassthroughSubject<Double, Never>()
-    var errorEffect = PassthroughSubject<EquatableError, Never>()
+    var errorEffect = PassthroughSubject<AudioPlayerClient.Error, Never>()
     var rateEffect = PassthroughSubject<Float, Never>()
     var progressEffect = PassthroughSubject<TimeInterval, Never>()
     var didPlayToEndTimeEffect = PassthroughSubject<Notification, Never>()
@@ -251,7 +251,7 @@ extension SwiftUITestTests {
         didPlayToEndTimeNotification = Self.testNotification
         
         durationEffect = PassthroughSubject<Double, Never>()
-        errorEffect = PassthroughSubject<EquatableError, Never>()
+        errorEffect = PassthroughSubject<AudioPlayerClient.Error, Never>()
         rateEffect = PassthroughSubject<Float, Never>()
         progressEffect = PassthroughSubject<TimeInterval, Never>()
         didPlayToEndTimeEffect = PassthroughSubject<Notification, Never>()
@@ -270,7 +270,7 @@ extension SwiftUITestTests {
             initialState: AudioPlayerFeature.State(
                 book: Book.dummyBook,
                 currentChapter: currentChapter,
-                audioPlayerClient: AudioPlayerClientReducer.State()
+                audioPlayerClient: AudioPlayerClientFeature.State()
             )
         ) {
             AudioPlayerFeature()

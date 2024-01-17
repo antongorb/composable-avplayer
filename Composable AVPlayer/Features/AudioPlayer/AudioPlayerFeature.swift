@@ -44,7 +44,7 @@ struct AudioPlayerFeature {
             return "KEY POINT \(index + 1) OF \(book.chapters.count)"
         }
         
-        var audioPlayerClient = AudioPlayerClientReducer.State()
+        var audioPlayerClient = AudioPlayerClientFeature.State()
     }
     
     enum Action: Equatable {
@@ -59,14 +59,14 @@ struct AudioPlayerFeature {
         case update(sliderIsEditing: Bool)
         case changeSlider(Double)
         
-        case audioPlayerClient(AudioPlayerClientReducer.Action)
+        case audioPlayerClient(AudioPlayerClientFeature.Action)
     }
     
     @Dependency(\.audioPlayer) var audioPlayer
     
-    var body: some Reducer<State, Action> {
+    var body: some ReducerOf<Self> {
         Scope(state: \.audioPlayerClient, action: /Action.audioPlayerClient) {
-            AudioPlayerClientReducer()
+            AudioPlayerClientFeature()
         }
         
         Reduce { state, action in

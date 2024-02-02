@@ -1,4 +1,4 @@
-PLATFORM_IOS = iOS Simulator,name=iPhone 14
+PLATFORM_IOS = iOS Simulator,name=iPhone 15
 PLATFORM_MACOS = macOS
 PLATFORM_TVOS = tvOS Simulator,name=Apple TV 4K (3rd generation) (at 1080p)
 PLATFORM_WATCHOS = watchOS Simulator,name=Apple Watch Series 8 (45mm)

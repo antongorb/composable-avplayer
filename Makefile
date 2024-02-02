@@ -7,12 +7,13 @@ default: test
 
 test:
 	xcodebuild test \
-		-skipMacroValidation \
 		-scheme ComposableAVPlayer \
-		-destination platform="$(PLATFORM_IOS)"
-	#xcodebuild test \
+		-destination platform="$(PLATFORM_IOS)" \
+		-skipMacroValidation
+	xcodebuild test \
 		-scheme ComposableAVPlayer \
-		-destination platform="$(PLATFORM_MACOS)"
+		-destination platform="$(PLATFORM_MACOS)" \
+		-skipMacroValidation
 	#xcodebuild test \
 		-scheme ComposableAVPlayer \
 		-destination platform="$(PLATFORM_TVOS)"

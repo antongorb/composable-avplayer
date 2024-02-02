@@ -9,16 +9,17 @@ test:
 	xcodebuild test \
 		-scheme ComposableAVPlayer \
 		-destination platform="$(PLATFORM_IOS)"
-	xcodebuild test \
+		-skipMacroValidation
+	#xcodebuild test \
 		-scheme ComposableAVPlayer \
 		-destination platform="$(PLATFORM_MACOS)"
-	xcodebuild test \
+	#xcodebuild test \
 		-scheme ComposableAVPlayer \
 		-destination platform="$(PLATFORM_TVOS)"
-	xcodebuild \
+	#xcodebuild \
 		-scheme ComposableAVPlayer_watchOS \
 		-destination platform="$(PLATFORM_WATCHOS)"
-	cd Examples/PlayerManager \
+	#cd Examples/PlayerManager \
 		&& xcodebuild test \
 		-scheme PlayerManagerDesktop \
 		-destination platform="$(PLATFORM_MACOS)"

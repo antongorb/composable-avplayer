@@ -50,7 +50,6 @@ private struct AudioInfoSection: View {
                     .font(.caption)
                     .fontWeight(.medium)
                     .multilineTextAlignment(.center)
-                    .bold()
                     .foregroundStyle(.gray)
                     .padding(.bottom, 2)
                 Text(viewStore.currentChapter.title)
@@ -102,7 +101,7 @@ private struct PlayerControlsSection: View {
                 })
                 .buttonStyle(.bordered)
                 .tint(.gray)
-                .font(.footnote).bold()
+                .font(.footnote)
                 .foregroundColor(.black)
                 .padding(.top)
                 

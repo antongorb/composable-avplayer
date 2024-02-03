@@ -18,9 +18,10 @@ test:
 		-scheme ComposableAVPlayer \
 		-destination platform="$(PLATFORM_TVOS)" \
 		-skipMacroValidation
-	#xcodebuild \
+	xcodebuild \
 		-scheme ComposableAVPlayer_watchOS \
-		-destination platform="$(PLATFORM_WATCHOS)"
+		-destination platform="$(PLATFORM_WATCHOS)" \
+		-skipMacroValidation
 	#cd Examples/PlayerManager \
 		&& xcodebuild test \
 		-scheme PlayerManagerDesktop \

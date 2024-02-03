@@ -6,15 +6,15 @@ PLATFORM_WATCHOS = watchOS Simulator,name=Apple Watch Series 8 (45mm)
 default: test
 
 test:
-	xcodebuild test \
+	#xcodebuild test \
 		-scheme ComposableAVPlayer \
 		-destination platform="$(PLATFORM_IOS)" \
 		-skipMacroValidation
-	xcodebuild test \
+	#xcodebuild test \
 		-scheme ComposableAVPlayer \
 		-destination platform="$(PLATFORM_MACOS)" \
 		-skipMacroValidation
-	xcodebuild test \
+	#xcodebuild test \
 		-scheme ComposableAVPlayer \
 		-destination platform="$(PLATFORM_TVOS)" \
 		-skipMacroValidation

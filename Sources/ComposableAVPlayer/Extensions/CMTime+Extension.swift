@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import AVKit
+import AVFoundation
 
 extension CMTime {
     

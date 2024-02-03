@@ -6,7 +6,7 @@
 //
 
 import Combine
-import AVKit
+import AVFoundation
 
 extension AVPlayerItem {
     

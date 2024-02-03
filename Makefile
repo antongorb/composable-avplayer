@@ -14,9 +14,10 @@ test:
 		-scheme ComposableAVPlayer \
 		-destination platform="$(PLATFORM_MACOS)" \
 		-skipMacroValidation
-	#xcodebuild test \
+	xcodebuild test \
 		-scheme ComposableAVPlayer \
-		-destination platform="$(PLATFORM_TVOS)"
+		-destination platform="$(PLATFORM_TVOS)" \
+		-skipMacroValidation
 	#xcodebuild \
 		-scheme ComposableAVPlayer_watchOS \
 		-destination platform="$(PLATFORM_WATCHOS)"

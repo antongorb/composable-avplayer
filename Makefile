@@ -22,15 +22,16 @@ test:
 		-scheme ComposableAVPlayer_watchOS \
 		-destination platform="$(PLATFORM_WATCHOS)" \
 		-skipMacroValidation
-	cd Examples/PlayerManager \
+	#cd Examples/PlayerManager \
 		&& xcodebuild test \
 		-scheme PlayerManagerDesktop \
 		-destination platform="$(PLATFORM_MACOS)" \
 		-skipMacroValidation
-	#cd Examples/PlayerManager \
+	cd Examples/PlayerManager \
 		&& xcodebuild test \
 		-scheme PlayerManagerMobile \
-		-destination platform="$(PLATFORM_IOS)"
+		-destination platform="$(PLATFORM_IOS)" \
+		-skipMacroValidation
 
 format:
 	swift format --in-place --recursive \

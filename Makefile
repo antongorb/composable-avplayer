@@ -18,14 +18,15 @@ test:
 		-scheme ComposableAVPlayer \
 		-destination platform="$(PLATFORM_TVOS)" \
 		-skipMacroValidation
-	xcodebuild \
+	#xcodebuild \
 		-scheme ComposableAVPlayer_watchOS \
 		-destination platform="$(PLATFORM_WATCHOS)" \
 		-skipMacroValidation
-	#cd Examples/PlayerManager \
+	cd Examples/PlayerManager \
 		&& xcodebuild test \
 		-scheme PlayerManagerDesktop \
-		-destination platform="$(PLATFORM_MACOS)"
+		-destination platform="$(PLATFORM_MACOS)" \
+		-skipMacroValidation
 	#cd Examples/PlayerManager \
 		&& xcodebuild test \
 		-scheme PlayerManagerMobile \

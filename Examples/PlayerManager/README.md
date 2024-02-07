@@ -1,7 +1,6 @@
 # Player Manager
 
-<img width="1094" alt="Screenshot 2024-01-30 at 10 52 55" src="https://github.com/antongorb/composable-avplayer/assets/39763987/2f6c8aba-fe3d-4f5f-8f27-84b555026cec">
-
+<img width="1062" alt="Screenshot 2024-02-07 at 20 30 53" src="https://github.com/antongorb/composable-avplayer/assets/39763987/bd69d18e-eab4-4e1e-a036-3880f1795018">
 
 This application demonstrates how to build a simple application for both iOS and macOS using AVPlayer.
 

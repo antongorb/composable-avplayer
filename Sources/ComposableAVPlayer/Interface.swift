@@ -41,49 +41,9 @@ public struct AudioPlayerClient {
 
 extension AudioPlayerClient: TestDependencyKey {
     
-    public static let previewValue = Self(
-        play: { _ in
-        }, pause: {
-        }, setRate: { _ in
-        }, seekTime: { _ in
-        }, progressEffect: {
-            return .none
-        }, statusEffect: {
-            return .none
-        }, rateEffect: {
-            return .none
-        }, durationEffect: {
-            return .none
-        }, didPlayToEndTimeEffect: {
-            return .none
-        }, errorEffect: {
-            return .none
-        }
-    )
+    public static let previewValue = Self()
     
-    public static let testValue = Self(
-        play: { _ in
-            unimplemented("\(Self.self).play")
-        }, pause: {
-            unimplemented("\(Self.self).pause")
-        }, setRate: { _ in
-            unimplemented("\(Self.self).setRate")
-        }, seekTime: { _ in
-            unimplemented("\(Self.self).seekTime")
-        }, progressEffect: {
-            unimplemented("\(Self.self).progressEffect", placeholder: Effect<TimeInterval>.none)
-        }, statusEffect: {
-            unimplemented("\(Self.self).statusEffect", placeholder: Effect<Status>.none)
-        }, rateEffect: {
-            unimplemented("\(Self.self).rateEffect", placeholder: Effect<Float>.none)
-        }, durationEffect: {
-            unimplemented("\(Self.self).durationEffect", placeholder: Effect<Double>.none)
-        }, didPlayToEndTimeEffect: {
-            unimplemented("\(Self.self).didPlayToEndTimeEffect", placeholder: Effect<Notification>.none)
-        }, errorEffect: {
-            unimplemented("\(Self.self).errorEffect", placeholder: Effect<Error>.none)
-        }
-    )
+    public static let testValue = Self()
 }
 
 extension DependencyValues {

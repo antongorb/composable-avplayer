@@ -1,13 +1,19 @@
-import Combine
-import ComposableArchitecture
-import ComposableAVPlayer
+//
+//  RootView.swift
+//  PlayerManager
+//
+//  Created by Anton Gorb on 07.02.2024.
+//  Copyright © 2024 Brandon Williams. All rights reserved.
+//
+
 import SwiftUI
+import ComposableArchitecture
 
 private let readMe = """
   This application demonstrates how to work with Composable AVPlayer
   """
 
-struct ContentView: View {
+struct RootView: View {
     
     var body: some View {
         NavigationView {
@@ -23,8 +29,7 @@ struct ContentView: View {
                     )
                 }
             }
-            .navigationBarTitle("Player Manager")
+            .navigationTitle("Player Manager")
         }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
 }

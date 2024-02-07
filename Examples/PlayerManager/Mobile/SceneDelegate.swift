@@ -11,10 +11,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        let contentView = ContentView()
         self.window = (scene as? UIWindowScene).map(UIWindow.init(windowScene:))
         if !_XCTIsTesting {
-            self.window?.rootViewController = UIHostingController(rootView: contentView)
+            self.window?.rootViewController = UIHostingController(rootView: RootView())
             self.window?.makeKeyAndVisible()
         }
     }

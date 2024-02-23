@@ -17,12 +17,11 @@ struct AudioPlayerView: View {
     let store: StoreOf<AudioPlayerFeature>
     
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
-            VStack {
-                AudioInfoSection(store: self.store)
-                PlayerControlsSection(store: self.store)
-            }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        }.onAppear(perform: { store.send(.onAppear) })
+        VStack {
+            AudioInfoSection(store: self.store)
+            PlayerControlsSection(store: self.store)
+        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .onAppear(perform: { store.send(.onAppear) })
     }
 }
 
@@ -33,35 +32,33 @@ private struct AudioInfoSection: View {
     let store: StoreOf<AudioPlayerFeature>
     
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
-            VStack (alignment: .center, spacing: 8) {
-                AsyncImage(url: viewStore.book.imageURL) { image in
-                    image.resizable(resizingMode: .stretch)
-                } placeholder: {
-                    Color.gray
-                }.aspectRatio(nil, contentMode: .fit)
-                    .frame(width: 260)
-                    .cornerRadius(8)
-                    .shadow(radius: 8)
-                    .padding(.bottom, 32)
-                    .padding(.top, 16)
-                
-                Text(viewStore.currentKeyPointText)
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.gray)
-                    .padding(.bottom, 2)
-                Text(viewStore.currentChapter.title)
-                    .font(.footnote)
-                    .fontWeight(.light)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.primary)
-                    .padding(.bottom, 2)
-                    .padding(.horizontal, 35)
-            }
-            .padding([.top, .bottom])
+        VStack (alignment: .center, spacing: 8) {
+            AsyncImage(url: store.book.imageURL) { image in
+                image.resizable(resizingMode: .stretch)
+            } placeholder: {
+                Color.gray
+            }.aspectRatio(nil, contentMode: .fit)
+                .frame(width: 260)
+                .cornerRadius(8)
+                .shadow(radius: 8)
+                .padding(.bottom, 32)
+                .padding(.top, 16)
+            
+            Text(store.currentKeyPointText)
+                .font(.caption)
+                .fontWeight(.medium)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.gray)
+                .padding(.bottom, 2)
+            Text(store.currentChapter.title)
+                .font(.footnote)
+                .fontWeight(.light)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.primary)
+                .padding(.bottom, 2)
+                .padding(.horizontal, 35)
         }
+        .padding([.top, .bottom])
     }
 }
 
@@ -69,24 +66,24 @@ private struct AudioInfoSection: View {
 
 private struct PlayerControlsSection: View {
     
-    let store: StoreOf<AudioPlayerFeature>
+    @Perception.Bindable var store: StoreOf<AudioPlayerFeature>
     
     var body: some View {
-        WithViewStore(self.store, observe: { $0 }) { viewStore in
+        WithPerceptionTracking {
             VStack {
                 HStack{
-                    Text(viewStore.audioPlayerClient.progressFormattable)
+                    Text(store.audioPlayerClient.progressFormattable)
                         .font(.footnote)
                         .foregroundStyle(.gray)
-                    Slider(value: viewStore.binding(get: \.sliderProgress, send: { .changeSlider($0) }), in: 0...viewStore.audioPlayerClient.durationSafe) { editing in
-                        viewStore.send(.update(sliderIsEditing: editing))
+                    Slider(value: $store.sliderProgress.sending(\.changeSlider), in: 0...store.audioPlayerClient.durationSafe) { editing in
+                        store.send(.update(sliderIsEditing: editing))
                         
                         if !editing {
-                            viewStore.send(.seekTime(to: viewStore.sliderValue))
+                            store.send(.seekTime(to: store.sliderValue))
                         }
                     }
                     
-                    Text(viewStore.audioPlayerClient.durationFormattable)
+                    Text(store.audioPlayerClient.durationFormattable)
                         .font(.footnote)
                         .foregroundStyle(.gray)
                 }
@@ -95,7 +92,7 @@ private struct PlayerControlsSection: View {
                 Button(action: {
                     store.send(.changeRateButtonTapped)
                 }, label: {
-                    Text(viewStore.audioPlayerClient.rateFormatted)
+                    Text(store.audioPlayerClient.rateFormatted)
                         .padding(.vertical, 3)
                         .foregroundColor(.black)
                 })
@@ -112,9 +109,9 @@ private struct PlayerControlsSection: View {
                     }) {
                         Image(systemName: "backward.end.fill")
                             .font(.system(size: 25))
-                            .foregroundColor(viewStore.skipToPreviousButtonEnabled ? .black : .gray)
+                            .foregroundColor(store.skipToPreviousButtonEnabled ? .black : .gray)
                             .frame(minWidth: 0, maxWidth: .infinity)
-                    }.disabled(!viewStore.skipToPreviousButtonEnabled)
+                    }.disabled(!store.skipToPreviousButtonEnabled)
                     
                     Button(action: {
                         store.send(.skipBackwardButtonTapped)
@@ -129,7 +126,7 @@ private struct PlayerControlsSection: View {
                         store.send(.playButtonTapped)
                     }) {
                         ZStack{
-                            Image(systemName: viewStore.audioPlayerClient.isPlaying ? "pause.fill" : "play.fill")
+                            Image(systemName: store.audioPlayerClient.isPlaying ? "pause.fill" : "play.fill")
                                 .foregroundColor(.black)
                                 .font(.system(size: 40))
                                 .frame(width: 80, height: 80)
@@ -151,9 +148,9 @@ private struct PlayerControlsSection: View {
                     }) {
                         Image(systemName: "forward.end.fill")
                             .font(.system(size: 25))
-                            .foregroundColor(viewStore.skipToNextButtonEnabled ? .black : .gray)
+                            .foregroundColor(store.skipToNextButtonEnabled ? .black : .gray)
                             .frame(minWidth: 0, maxWidth: .infinity)
-                    }.disabled(!viewStore.skipToNextButtonEnabled)
+                    }.disabled(!store.skipToNextButtonEnabled)
                     
                 }
                 .padding(.top, 24)
@@ -161,7 +158,6 @@ private struct PlayerControlsSection: View {
                 .padding(.horizontal, 45)
             }
         }
-        
     }
 }
 

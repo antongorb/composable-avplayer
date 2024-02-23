@@ -12,6 +12,7 @@ import ComposableAVPlayer
 @Reducer
 public struct AudioPlayerClientFeature {
     
+    @ObservableState
     public struct State: Equatable {
         public var isPlaying = false
         

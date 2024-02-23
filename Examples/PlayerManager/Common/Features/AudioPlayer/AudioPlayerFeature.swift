@@ -14,6 +14,7 @@ public struct AudioPlayerFeature {
     
     public init() { }
     
+    @ObservableState
     public struct State: Equatable {
         public var book: Book
         public var currentChapter: Chapter

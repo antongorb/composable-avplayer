@@ -26,10 +26,10 @@ public struct AudioPlayerClient {
         }
     }
     
-    public var play: (_ url: URL) async -> Void
-    public var pause: () async -> Void
-    public var setRate: (_ rate: Float) async -> Void
-    public var seekTime: (_ seconds: Double) async -> Void
+    public var play: @Sendable (_ url: URL) async -> Void
+    public var pause: @Sendable () async -> Void
+    public var setRate: @Sendable (_ rate: Float) async -> Void
+    public var seekTime: @Sendable (_ seconds: Double) async -> Void
     
     public var progressEffect: () -> Effect<TimeInterval> = { .none }
     public var statusEffect: () -> Effect<Status> = { .none }

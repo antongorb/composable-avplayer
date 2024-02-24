@@ -57,38 +57,49 @@ extension AudioPlayerClient: DependencyKey {
                 }
             }, seekTime: { seconds in
                 await player.seek(to: CMTime(seconds: seconds))
-            }, progressEffect: {
-                return .publisher { player.playheadProgressPublisher().receive(on: DispatchQueue.main) }
-            }, statusEffect: {
-                let statusPublisher = currentItemPublisher
+            }, progress: {
+                return player.playheadProgressPublisher().values.eraseToStream()
+            }, status: {
+                let status = currentItemPublisher
                     .flatMap { $0.statusPublisher().eraseToAnyPublisher() }
                     .map { AudioPlayerClient.Status($0) }
                     .receive(on: DispatchQueue.main)
+                    .values
+                    .eraseToStream()
                 
-                return .publisher { statusPublisher }
-            }, rateEffect: {
-                return .publisher { player.ratePublisher().receive(on: DispatchQueue.main) }
-            }, durationEffect: {
-                let durationPublisher = currentItemPublisher
+                return status
+            }, rate: {
+                return player.ratePublisher()
+                    .receive(on: DispatchQueue.main)
+                    .values
+                    .eraseToStream()
+            }, duration: {
+                let duration = currentItemPublisher
                     .flatMap { $0.durationPublisher().eraseToAnyPublisher() }
                     .map { $0.seconds }
                     .receive(on: DispatchQueue.main)
+                    .values
+                    .eraseToStream()
                 
-                return .publisher { durationPublisher }
-            }, didPlayToEndTimeEffect: {
-                let didPlayToEndTimePublisher = currentItemPublisher
+                return duration
+            }, didPlayToEndTime: {
+                let didPlayToEndTime = currentItemPublisher
                     .flatMap { $0.didPlayToEndTimePublisher().eraseToAnyPublisher() }
                     .receive(on: DispatchQueue.main)
+                    .values
+                    .eraseToStream()
                 
-                return .publisher { didPlayToEndTimePublisher }
-            }, errorEffect: {
-                let errorPublisher = currentItemPublisher
+                return didPlayToEndTime
+            }, error: {
+                let error = currentItemPublisher
                     .flatMap { $0.publisher(for: \.error).eraseToAnyPublisher() }
                     .compactMap { $0 }
                     .map { Error($0) }
                     .receive(on: DispatchQueue.main)
+                    .values
+                    .eraseToStream()
                 
-                return .publisher { errorPublisher }
+                return error
             }
         )
     }

@@ -17,6 +17,8 @@ final class CommonTests: XCTestCase {
         case invalidURL
     }
     
+    typealias Store = TestStoreOf<AudioPlayerFeature>
+    
     let rateStep: Float = 0.25
     let backwardSeconds: Double = 5
     let forwardSeconds: Double = 10
@@ -24,31 +26,30 @@ final class CommonTests: XCTestCase {
     static let testNotification = Notification(name: AVPlayerItem.didPlayToEndTimeNotification)
     
     var duration: Double = 0 {
-        didSet { durationEffect.send(duration) }
+        didSet { durationStream.continuation.yield(duration) }
     }
     
     var progress: Double = 0 {
-        didSet { progressEffect.send(progress) }
+        didSet { progressStream.continuation.yield(progress) }
     }
     
     var rate: Float = 1 {
-        didSet { rateEffect.send(rate) }
+        didSet { rateStream.continuation.yield(rate) }
     }
     
     var error = testError {
-        didSet { errorEffect.send(error) }
+        didSet { errorStream.continuation.yield(error) }
     }
     
     var didPlayToEndTimeNotification = testNotification {
-        didSet { didPlayToEndTimeEffect.send(didPlayToEndTimeNotification) }
+        didSet { didPlayToEndTimeStream.continuation.yield(didPlayToEndTimeNotification) }
     }
     
-    var durationEffect = PassthroughSubject<Double, Never>()
-    var errorEffect = PassthroughSubject<AudioPlayerClient.Error, Never>()
-    var rateEffect = PassthroughSubject<Float, Never>()
-    var progressEffect = PassthroughSubject<TimeInterval, Never>()
-    var didPlayToEndTimeEffect = PassthroughSubject<Notification, Never>()
-    
+    var durationStream = AsyncStream.makeStream(of: Double.self)
+    var errorStream = AsyncStream.makeStream(of: AudioPlayerClient.Error.self)
+    var rateStream = AsyncStream.makeStream(of: Float.self)
+    var progressStream = AsyncStream.makeStream(of: TimeInterval.self)
+    var didPlayToEndTimeStream = AsyncStream.makeStream(of: Notification.self)
     
     func testStartObservingOnAppear() async throws {
         let store = makeStore()
@@ -71,7 +72,7 @@ final class CommonTests: XCTestCase {
         await store.receive(.audioPlayerClient(.startListenDidPlayToEndTime))
         await store.receive(.audioPlayerClient(.startListenError))
         
-        self.finishObservers()
+        await finishObservers(store: store)
     }
     
     func testUpdateRate() async throws {
@@ -93,7 +94,7 @@ final class CommonTests: XCTestCase {
             $0.audioPlayerClient.isPlaying = true
         }
         
-        finishObservers()
+        await finishObservers(store: store)
     }
     
     func testUpdateDuration() async throws {
@@ -106,7 +107,7 @@ final class CommonTests: XCTestCase {
             $0.audioPlayerClient.duration = self.duration
         }
         
-        finishObservers()
+        await finishObservers(store: store)
     }
     
     func testUpdateProgress() async throws {
@@ -119,7 +120,7 @@ final class CommonTests: XCTestCase {
             $0.audioPlayerClient.progress = self.progress
         }
         
-        finishObservers()
+        await finishObservers(store: store)
     }
     
     func testReceiveError() async throws {
@@ -130,7 +131,7 @@ final class CommonTests: XCTestCase {
         error = Self.testError
         await store.receive(.audioPlayerClient(.errorReceived(error)))
         
-        finishObservers()
+        await finishObservers(store: store)
     }
     
     func testDidPlayToEndTimeNotification() async throws {
@@ -147,7 +148,7 @@ final class CommonTests: XCTestCase {
         await store.receive(.audioPlayerClient(.skipToNext(url: store.state.currentChapter.playUrl)))
         await store.receive(.audioPlayerClient(.update(rate: store.state.audioPlayerClient.rate)))
         
-        finishObservers()
+        await finishObservers(store: store)
     }
     
     func testSkipBackward() async throws {
@@ -167,12 +168,11 @@ final class CommonTests: XCTestCase {
             $0.audioPlayerClient.progress = store.state.audioPlayerClient.progress - self.backwardSeconds
         }
         
-        finishObservers()
+        await finishObservers(store: store)
     }
     
     func testSkipForward() async throws {
         let store = makeStore()
-        
         
         await store.send(.audioPlayerClient(.startListenDuration))
         duration = 200
@@ -193,7 +193,7 @@ final class CommonTests: XCTestCase {
             $0.audioPlayerClient.progress = store.state.audioPlayerClient.progress + self.forwardSeconds
         }
         
-        finishObservers()
+        await finishObservers(store: store)
     }
     
     func testSkipToNext() async throws {
@@ -205,9 +205,7 @@ final class CommonTests: XCTestCase {
             $0.currentChapter = store.state.book.chapters[currentIndex + 1]
         }
         await store.receive(.audioPlayerClient(.skipToNext(url: store.state.currentChapter.playUrl)))
-        await store.receive(.audioPlayerClient(.update(rate: store.state.audioPlayerClient.rate)))
-        
-        
+        await store.receive(.audioPlayerClient(.update(rate: store.state.audioPlayerClient.rate)))        
     }
     
     func testSkipToPrevious() async throws {
@@ -236,7 +234,7 @@ final class CommonTests: XCTestCase {
             $0.audioPlayerClient.isPlaying = false
         }
         
-        finishObservers()
+        await finishObservers(store: store)
     }
 }
 
@@ -249,23 +247,26 @@ extension CommonTests {
         error = Self.testError
         didPlayToEndTimeNotification = Self.testNotification
         
-        durationEffect = PassthroughSubject<Double, Never>()
-        errorEffect = PassthroughSubject<AudioPlayerClient.Error, Never>()
-        rateEffect = PassthroughSubject<Float, Never>()
-        progressEffect = PassthroughSubject<TimeInterval, Never>()
-        didPlayToEndTimeEffect = PassthroughSubject<Notification, Never>()
+        durationStream = AsyncStream.makeStream(of: Double.self)
+        errorStream = AsyncStream.makeStream(of: AudioPlayerClient.Error.self)
+        rateStream = AsyncStream.makeStream(of: Float.self)
+        progressStream = AsyncStream.makeStream(of: TimeInterval.self)
+        didPlayToEndTimeStream = AsyncStream.makeStream(of: Notification.self)
     }
     
-    func finishObservers() {
-        durationEffect.send(completion: .finished)
-        errorEffect.send(completion: .finished)
-        rateEffect.send(completion: .finished)
-        progressEffect.send(completion: .finished)
-        didPlayToEndTimeEffect.send(completion: .finished)
+    func finishObservers(store: Store) async {
+        durationStream.continuation.finish()
+        errorStream.continuation.finish()
+        rateStream.continuation.finish()
+        progressStream.continuation.finish()
+        didPlayToEndTimeStream.continuation.finish()
+        
+        await store.finish()
     }
     
-    func makeStore(currentChapter: Chapter = Chapter.dummyChapter(0)) -> TestStore<AudioPlayerFeature.State, AudioPlayerFeature.Action> {
-        return TestStore(
+    func makeStore(currentChapter: Chapter = Chapter.dummyChapter(0)) -> Store {
+        
+        return Store(
             initialState: AudioPlayerFeature.State(
                 book: Book.dummyBook,
                 currentChapter: currentChapter,
@@ -274,24 +275,24 @@ extension CommonTests {
         ) {
             AudioPlayerFeature()
         } withDependencies: {
-            $0.audioPlayer.play = { _ in }
+            $0.audioPlayer.play = { @Sendable _ in }
             $0.audioPlayer.pause = { }
-            $0.audioPlayer.setRate = { _ in }
-            $0.audioPlayer.seekTime = { _ in }
-            $0.audioPlayer.durationEffect = {
-                return .publisher { self.durationEffect }
+            $0.audioPlayer.setRate = { @Sendable _ in }
+            $0.audioPlayer.seekTime = { @Sendable _ in }
+            $0.audioPlayer.duration = {
+                return await self.durationStream.stream
             }
-            $0.audioPlayer.rateEffect = {
-                return .publisher { self.rateEffect }
+            $0.audioPlayer.rate = {
+                return await self.rateStream.stream
             }
-            $0.audioPlayer.progressEffect = {
-                return .publisher { self.progressEffect }
+            $0.audioPlayer.progress = {
+                return await self.progressStream.stream
             }
-            $0.audioPlayer.errorEffect = {
-                return .publisher { self.errorEffect }
+            $0.audioPlayer.error = {
+                return await self.errorStream.stream
             }
-            $0.audioPlayer.didPlayToEndTimeEffect = {
-                return .publisher { self.didPlayToEndTimeEffect }
+            $0.audioPlayer.didPlayToEndTime = {
+                return await self.didPlayToEndTimeStream.stream
             }
         }
     }

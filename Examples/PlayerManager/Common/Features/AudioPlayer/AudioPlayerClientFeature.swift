@@ -158,15 +158,35 @@ public struct AudioPlayerClientFeature {
                     await send(.startListenError)
                 }
             case .startListenProgress:
-                return audioPlayer.progressEffect().map { .progressUpdated($0) }
+                return .run { send in
+                    for await progress in await self.audioPlayer.progress() {
+                        await send(.progressUpdated(progress))
+                    }
+                }
             case .startListenDuration:
-                return audioPlayer.durationEffect().map { .durationUpdated($0) }
+                return .run { send in
+                    for await duration in await self.audioPlayer.duration() {
+                        await send(.durationUpdated(duration))
+                    }
+                }
             case .startListenRate:
-                return audioPlayer.rateEffect().map { .rateUpdated($0) }
+                return .run { send in
+                    for await rate in await self.audioPlayer.rate() {
+                        await send(.rateUpdated(rate))
+                    }
+                }
             case .startListenDidPlayToEndTime:
-                return audioPlayer.didPlayToEndTimeEffect().map { _ in .didPlayToEndTimeReceived }
+                return .run { send in
+                    for await _ in await self.audioPlayer.didPlayToEndTime() {
+                        await send(.didPlayToEndTimeReceived)
+                    }
+                }
             case .startListenError:
-                return audioPlayer.errorEffect().map { .errorReceived($0) }
+                return .run { send in
+                    for await error in await self.audioPlayer.error() {
+                        await send(.errorReceived(error))
+                    }
+                }
             }
         }
     }

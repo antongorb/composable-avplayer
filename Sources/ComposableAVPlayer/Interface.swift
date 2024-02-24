@@ -31,12 +31,12 @@ public struct AudioPlayerClient {
     public var setRate: @Sendable (_ rate: Float) async -> Void
     public var seekTime: @Sendable (_ seconds: Double) async -> Void
     
-    public var progressEffect: @Sendable () -> Effect<TimeInterval> = { .none }
-    public var statusEffect: @Sendable () -> Effect<Status> = { .none }
-    public var rateEffect: @Sendable () -> Effect<Float> = { .none }
-    public var durationEffect: @Sendable () -> Effect<Double> = { .none }
-    public var didPlayToEndTimeEffect: @Sendable () -> Effect<Notification> = { .none }
-    public var errorEffect: @Sendable () -> Effect<Error> = { .none }
+    public var progress: @Sendable () async -> AsyncStream<TimeInterval> = { .finished }
+    public var status: @Sendable () async -> AsyncStream<Status> = { .finished }
+    public var rate: @Sendable () async -> AsyncStream<Float> = { .finished }
+    public var duration: @Sendable () async -> AsyncStream<Double> = { .finished }
+    public var didPlayToEndTime: @Sendable () async -> AsyncStream<Notification> = { .finished }
+    public var error: @Sendable () async -> AsyncStream<Error> = { .finished }
 }
 
 extension AudioPlayerClient: TestDependencyKey {

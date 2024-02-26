@@ -14,14 +14,20 @@ import ComposableArchitecture
 
 struct AudioPlayerView: View {
     
-    let store: StoreOf<AudioPlayerFeature>
+    private let store: StoreOf<AudioPlayerFeature>
+    
+    init(store: StoreOf<AudioPlayerFeature>) {
+        self.store = store
+    }
     
     var body: some View {
-        VStack {
-            AudioInfoSection(store: self.store)
-            PlayerControlsSection(store: self.store)
-        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .onAppear(perform: { store.send(.onAppear) })
+        WithPerceptionTracking {
+            VStack {
+                AudioInfoSection(store: store)
+                PlayerControlsSection(store: store)
+            }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .onAppear(perform: { store.send(.onAppear) })
+        }
     }
 }
 
@@ -29,36 +35,42 @@ struct AudioPlayerView: View {
 
 private struct AudioInfoSection: View {
     
-    let store: StoreOf<AudioPlayerFeature>
+    private let store: StoreOf<AudioPlayerFeature>
+    
+    init(store: StoreOf<AudioPlayerFeature>) {
+        self.store = store
+    }
     
     var body: some View {
-        VStack (alignment: .center, spacing: 8) {
-            AsyncImage(url: store.book.imageURL) { image in
-                image.resizable(resizingMode: .stretch)
-            } placeholder: {
-                Color.gray
-            }.aspectRatio(nil, contentMode: .fit)
-                .frame(width: 260)
-                .cornerRadius(8)
-                .shadow(radius: 8)
-                .padding(.bottom, 32)
-                .padding(.top, 16)
-            
-            Text(store.currentKeyPointText)
-                .font(.caption)
-                .fontWeight(.medium)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.gray)
-                .padding(.bottom, 2)
-            Text(store.currentChapter.title)
-                .font(.footnote)
-                .fontWeight(.light)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.primary)
-                .padding(.bottom, 2)
-                .padding(.horizontal, 35)
+        WithPerceptionTracking {
+            VStack (alignment: .center, spacing: 8) {
+                AsyncImage(url: store.book.imageURL) { image in
+                    image.resizable(resizingMode: .stretch)
+                } placeholder: {
+                    Color.gray
+                }.aspectRatio(nil, contentMode: .fit)
+                    .frame(width: 260)
+                    .cornerRadius(8)
+                    .shadow(radius: 8)
+                    .padding(.bottom, 32)
+                    .padding(.top, 16)
+                
+                Text(store.currentKeyPointText)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.gray)
+                    .padding(.bottom, 2)
+                Text(store.currentChapter.title)
+                    .font(.footnote)
+                    .fontWeight(.light)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.primary)
+                    .padding(.bottom, 2)
+                    .padding(.horizontal, 35)
+            }
+            .padding([.top, .bottom])
         }
-        .padding([.top, .bottom])
     }
 }
 
@@ -66,7 +78,11 @@ private struct AudioInfoSection: View {
 
 private struct PlayerControlsSection: View {
     
-    @Perception.Bindable var store: StoreOf<AudioPlayerFeature>
+    @Perception.Bindable private var store: StoreOf<AudioPlayerFeature>
+    
+    init(store: StoreOf<AudioPlayerFeature>) {
+        self.store = store
+    }
     
     var body: some View {
         WithPerceptionTracking {
